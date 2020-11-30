@@ -31,11 +31,9 @@ class DeeplinkInstrumentedTest {
 
     private fun checkLinkCanBeResolvedByICookApp(it: String) {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
-        // 指定 application package，限定只有 ICook App 可以接這個 intent，如果 resolveActivity 的結果不為 null 代表支援這個 intent
         intent.setPackage(BuildConfig.APPLICATION_ID)
-        if (intent.resolveActivity(InstrumentationRegistry.getInstrumentation().context.packageManager
-            ) == null
-        ) {
+        if (intent.resolveActivity(InstrumentationRegistry
+                .getInstrumentation().context.packageManager) == null) {
             Assert.fail("fail:$it should be resolved")
         }
 
@@ -54,7 +52,6 @@ class DeeplinkInstrumentedTest {
 
     private fun checkLinkCanNotBeResolvedByICookApp(it: String) {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
-        // 指定 application package，限定只有 ICook App 可以接這個 intent，如果 resolveActivity 的結果為 null 代表不支援這個 intent
         intent.setPackage(BuildConfig.APPLICATION_ID)
         if (intent.resolveActivity(InstrumentationRegistry.getInstrumentation().context.packageManager) != null
         ) {
@@ -80,15 +77,18 @@ class DeeplinkInstrumentedTest {
         instrumentation.addMonitor(monitor)
 
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(urlString))
-        // context 要開Activity 的話要 new task
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        // 指定 application package，限定只有 ICook App 可以接這個 intent
         intent.setPackage(BuildConfig.APPLICATION_ID)
         instrumentation.startActivitySync(intent)
 
         val currentActivity: Activity = instrumentation.waitForMonitorWithTimeout(monitor, 1000)
         Assert.assertNotNull(currentActivity)
-        instrumentation.removeMonitor(monitor)
-    }
 
+        //Check extra data if you need
+        //Assert.assertNotNull(currentActivity.intent.data)
+
+        instrumentation.removeMonitor(monitor)
+
+
+    }
 }
